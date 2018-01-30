@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Win32;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -13,16 +14,24 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace Diabolik_Lovers_STCM2L_Editor
-{
-    /// <summary>
-    /// Interaction logic for MainWindow.xaml
-    /// </summary>
-    public partial class MainWindow : Window
-    {
-        public MainWindow()
-        {
+using Diabolik_Lovers_STCM2L_Editor.classes;
+
+namespace Diabolik_Lovers_STCM2L_Editor {
+    public partial class MainWindow : Window {
+        private STCM2L stcm2l;
+
+        public MainWindow() {
             InitializeComponent();
+        }
+
+        private void OpenFile(object sender, RoutedEventArgs e) {
+            OpenFileDialog openFileDialog = new OpenFileDialog();
+
+            if(openFileDialog.ShowDialog() == true) {
+                stcm2l = new STCM2L(openFileDialog.FileName);
+
+                label.Content = stcm2l.file;
+            }
         }
     }
 }

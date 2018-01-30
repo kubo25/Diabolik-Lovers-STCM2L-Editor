@@ -6,7 +6,15 @@
         xmlns:local="clr-namespace:Diabolik_Lovers_STCM2L_Editor"
         mc:Ignorable="d"
         Title="Diabolik Lovers STC2ML Editor" Height="370.021" Width="561.335">
-    <Grid>
+    <DockPanel>
+        <Menu DockPanel.Dock="Top" IsMainMenu="True">
+            <MenuItem Header="_File">
+                <MenuItem Header="_Open" Click="OpenFile"/>
+            </MenuItem>
+        </Menu>
+        <Grid>
+            <Label Content="Label" Name="label"/>
 
-    </Grid>
+        </Grid>
+    </DockPanel>
 </Window>
