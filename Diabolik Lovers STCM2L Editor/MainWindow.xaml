@@ -5,8 +5,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Diabolik_Lovers_STCM2L_Editor"
         mc:Ignorable="d"
-        Title="MainWindow" Height="350" Width="525">
+        Title="Diabolik Lovers STC2ML Editor" Height="370.021" Width="561.335">
     <Grid>
-        
+
     </Grid>
 </Window>
