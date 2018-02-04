@@ -91,7 +91,7 @@ namespace Diabolik_Lovers_STCM2L_Editor.classes {
         }
 
         private void ReadExports () {
-            int exportsLength = File.Length - ExportsPosition;
+            int exportsLength = CollectionLinkPosition - ExportsPosition;
             ExportsCount = exportsLength / EXPORT_SIZE;
 
             int seek = ExportsPosition;
