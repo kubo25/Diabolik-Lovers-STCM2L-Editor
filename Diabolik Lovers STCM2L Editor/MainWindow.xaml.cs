@@ -30,7 +30,14 @@ namespace Diabolik_Lovers_STCM2L_Editor {
             if(openFileDialog.ShowDialog() == true) {
                 stcm2l = new STCM2L(openFileDialog.FileName);
 
-                label.Content = stcm2l.file;
+                if (stcm2l.Load()) {
+                    label.Content = "0x" + stcm2l.StartPosition.ToString("X");
+                }
+                else {
+                    label.Content = "Invalid File";
+                    return;
+                }
+
             }
         }
     }
