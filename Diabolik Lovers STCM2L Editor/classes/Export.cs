@@ -9,6 +9,8 @@ namespace Diabolik_Lovers_STCM2L_Editor.classes {
         public char[] Name { get; set; }
         public int Address { get; set; }
         public int OldAddress { get; set; }
+
+        public Action ExportedAction { get; set; }
         
         public Export() {
             Name = new char[32];

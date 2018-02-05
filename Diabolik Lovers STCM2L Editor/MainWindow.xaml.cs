@@ -27,7 +27,7 @@ namespace Diabolik_Lovers_STCM2L_Editor {
         private void OpenFile(object sender, RoutedEventArgs e) {
             OpenFileDialog openFileDialog = new OpenFileDialog();
 
-            if(openFileDialog.ShowDialog() == true) {
+            if (openFileDialog.ShowDialog() == true) {
                 stcm2l = new STCM2L(openFileDialog.FileName);
 
                 if (stcm2l.Load()) {
