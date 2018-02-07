@@ -1,17 +1,17 @@
 ﻿using Diabolik_Lovers_STCM2L_Editor.utils;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Controls;
 
 namespace Diabolik_Lovers_STCM2L_Editor.classes {
     class STCM2L {
         public const int HEADER_OFFSET = 0x20;
         public const int EXPORT_SIZE = 0x28;
-
-        private Encoding encoding = Encoding.GetEncoding("shift-jis");
 
         public string FilePath { get; set; }
         public byte[] File { get; set; }
@@ -28,10 +28,13 @@ namespace Diabolik_Lovers_STCM2L_Editor.classes {
 
         public List<Action> Actions { get; set; }
 
+        public ObservableCollection<TextEntity> Texts { get; set; }
+
         public STCM2L (string filePath) {
             FilePath = filePath;
             Exports = new List<Export>();
             Actions = new List<Action>();
+            Texts = new ObservableCollection<TextEntity>();
         }
 
         public bool Load() {
@@ -49,6 +52,8 @@ namespace Diabolik_Lovers_STCM2L_Editor.classes {
                 ReadCollectionLink();
                 ReadExports();
                 ReadActions();
+
+                MakeEntities();
 
                 return true;
             }
@@ -79,7 +84,7 @@ namespace Diabolik_Lovers_STCM2L_Editor.classes {
         }
 
         private UInt32 FindStart() {
-            byte[] start = encoding.GetBytes("CODE_START_");
+            byte[] start = EncodingUtil.encoding.GetBytes("CODE_START_");
 
             for (int i = 0; i < 2000; i++) {
                 if (File[i] == start[0]) {
@@ -179,8 +184,18 @@ namespace Diabolik_Lovers_STCM2L_Editor.classes {
                     Actions[i].ExtraDataLength > 0
                 ) {
                     TextEntity textEntity = new TextEntity();
+                    textEntity.SetConversation(ref i, Actions);
+
+                    Texts.Add(textEntity);
+                }
+                else if (Actions[i].OpCode == Action.ACTION_CHOICE) {
+                    TextEntity textEntity = new TextEntity();
+                    textEntity.SetAnswer(ref i, Actions);
+                    Texts.Add(textEntity);
                 }
             }
+
+            Console.WriteLine("Read {0} texts.", Texts.Count);
         }
     }
 }

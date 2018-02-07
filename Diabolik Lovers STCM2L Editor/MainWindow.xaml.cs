@@ -22,6 +22,7 @@ namespace Diabolik_Lovers_STCM2L_Editor {
 
         public MainWindow() {
             InitializeComponent();
+            this.DataContext = this;
         }
 
         private void OpenFile(object sender, RoutedEventArgs e) {
@@ -31,14 +32,17 @@ namespace Diabolik_Lovers_STCM2L_Editor {
                 stcm2l = new STCM2L(openFileDialog.FileName);
 
                 if (stcm2l.Load()) {
-                    label.Content = "0x" + stcm2l.StartPosition.ToString("X");
+                    TextsList.ItemsSource = stcm2l.Texts;
                 }
                 else {
-                    label.Content = "Invalid File";
-                    return;
+                   // TextBox.Text = "Invalid File";
                 }
 
             }
+        }
+
+        private void ListBoxItemClick(object sender, MouseButtonEventArgs e) {
+            LinesList.ItemsSource = ((sender as ListBoxItem).DataContext as TextEntity).Lines;
         }
     }
 }

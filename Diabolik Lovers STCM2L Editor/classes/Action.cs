@@ -8,8 +8,8 @@ using Diabolik_Lovers_STCM2L_Editor.utils;
 
 namespace Diabolik_Lovers_STCM2L_Editor.classes {
     class Action {
-        public const UInt32 ACTION_NAME = 0xd2;
-        public const UInt32 ACTION_TEXT = 0xd4;
+        public const UInt32 ACTION_NAME = 0xd4;
+        public const UInt32 ACTION_TEXT = 0xd2;
         public const UInt32 ACTION_CHOICE = 0xe7;
 
         public UInt32 Length { get; set; }
@@ -28,10 +28,12 @@ namespace Diabolik_Lovers_STCM2L_Editor.classes {
         public Action() {
             Length = 0;
             ParameterCount = 0;
+            LocalParameterCount = 0;
+            OldAddress = 0;
+            Address = 0;
             OpCode = 0;
             IsLocalCall = 0;
-            Address = 0;
-            LocalParameterCount = 0;
+            ExtraDataLength = 0;
 
             Parameters = new List<Parameter>();
         }
@@ -85,6 +87,21 @@ namespace Diabolik_Lovers_STCM2L_Editor.classes {
             if (ExtraDataLength > 0) {
                 ExtraData = ByteUtil.ReadBytes(file, ExtraDataLength, ref seek);
             }
+        }
+
+        public string GetStringFromParameter(int parameter) {
+            if (ExtraDataLength == 0) {
+                return null;
+            }
+
+            UInt32 offset = Parameters[parameter].RelativeAddress - 16 - ParameterCount * 12;
+            int position = (int)offset + 3 * 4;
+
+            UInt32 length = ByteUtil.ReadUInt32(ExtraData, ref position);
+
+            byte[] byteString = ByteUtil.ReadBytes(ExtraData, length, ref position);
+
+            return EncodingUtil.encoding.GetString(byteString).TrimEnd(new char[] { '\0' });
         }
     }
 }

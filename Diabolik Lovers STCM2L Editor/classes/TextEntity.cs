@@ -11,8 +11,8 @@ namespace Diabolik_Lovers_STCM2L_Editor.classes {
 
         public List<string> Lines { get; set; }
         public List<Action> LineActions { get; set; }
+        public int LinesCount { get; set; } //TODO: Check if necessary
 
-        public int LineCount { get; set; }
         public UInt32 OldAddress { get; set; }
 
         public List<Action> Actions { get; set; }
@@ -21,21 +21,52 @@ namespace Diabolik_Lovers_STCM2L_Editor.classes {
         public bool IsHighlighted { get; set; }
 
         public TextEntity() {
+            Name = null;
+            Lines = new List<string>();
             LineActions = new List<Action>();
+            LinesCount = 0;
             Actions = new List<Action>();
         }
 
-        public int SetConversation(int i, List<Action> actions) {
+        public void SetConversation(ref int i, List<Action> actions) {
             Actions = actions;
 
             UInt32 opCode = actions[i].OpCode;
             OldAddress = actions[i].OldAddress;
 
             while (opCode == Action.ACTION_NAME || opCode == Action.ACTION_TEXT) {
-                if (opCode == Action.ACTION_TEXT) {
-
+                if (opCode == Action.ACTION_NAME) {
+                    if (Name == null) {
+                        Name = actions[i].GetStringFromParameter(0);
+                        NameAction = actions[i];
+                    }
                 }
+                else {
+                    string temp = actions[i].GetStringFromParameter(0);
+
+                    Lines.Add(temp);
+                    LineActions.Add(actions[i]);
+                    LinesCount++;
+                }
+                i++;
+
+                if (i >= actions.Count) {
+                    break;
+                }
+
+                opCode = actions[i].OpCode;
             }
+
+            i--;
+        }
+
+        public void SetAnswer(ref int i, List<Action> actions) {
+            string temp = actions[i].GetStringFromParameter(0);
+
+            Lines.Add(temp);
+            LineActions.Add(actions[i]);
+            LinesCount = 1;
+            IsAnswer = true;
         }
     }
 }
