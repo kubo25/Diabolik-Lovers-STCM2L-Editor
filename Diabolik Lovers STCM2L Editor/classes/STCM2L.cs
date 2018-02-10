@@ -12,6 +12,7 @@ namespace Diabolik_Lovers_STCM2L_Editor.classes {
     class STCM2L {
         public const int HEADER_OFFSET = 0x20;
         public const int EXPORT_SIZE = 0x28;
+        public const int COLLECTION_LINK_PADDING = 0x38;
 
         public string FilePath { get; set; }
         public byte[] File { get; set; }
@@ -65,21 +66,12 @@ namespace Diabolik_Lovers_STCM2L_Editor.classes {
 
         private void ReadStartData () {
             int seek = 0;
-
             StartData = ByteUtil.ReadBytes(File, StartPosition, ref seek);
 
-            Array.Copy(File, StartData, StartPosition);
-
-            byte[] positionArr = new byte[sizeof(int)];
-
             seek = HEADER_OFFSET;
-
-            Array.Copy(StartData, HEADER_OFFSET, positionArr, 0, sizeof(int));
             ExportsPosition = ByteUtil.ReadUInt32(StartData, ref seek);
 
             seek += 2 * 4;
-
-            Array.Copy(StartData, HEADER_OFFSET + 3 * 4, positionArr, 0, sizeof(int));
             CollectionLinkPosition = ByteUtil.ReadUInt32(StartData, ref seek);
         }
 
@@ -103,33 +95,23 @@ namespace Diabolik_Lovers_STCM2L_Editor.classes {
         }
 
         private void ReadCollectionLink() {
-            byte[] positionArr = new byte[sizeof(int)];
-
-            Array.Copy(File, CollectionLinkPosition + 4, positionArr, 0, sizeof(int));
-            CollectionLinkOldAddress = BitConverter.ToUInt32(positionArr, 0);
+            int seek = (int)CollectionLinkPosition + 4;
+            CollectionLinkOldAddress = ByteUtil.ReadUInt32(File, ref seek);
         }
 
         private void ReadExports () {
             int exportsLength = (int) (CollectionLinkPosition - ExportsPosition);
             ExportsCount = exportsLength / EXPORT_SIZE;
 
-            UInt32 seek = ExportsPosition;
+            int seek = (int)ExportsPosition;
 
             for (int i = 0; i < ExportsCount; i++) {
                 Export export = new Export();
 
                 seek += 4;
 
-                Array.Copy(File, seek, export.Name, 0, 32);
-
-                seek += 32;
-
-                byte[] oldAddress = new byte[sizeof(int)];
-                Array.Copy(File, seek, oldAddress, 0, sizeof(int));
-
-                export.OldAddress = BitConverter.ToInt32(oldAddress, 0);
-
-                seek += 4;
+                export.Name = EncodingUtil.encoding.GetString(ByteUtil.ReadBytes(File, 32, ref seek));
+                export.OldAddress = ByteUtil.ReadUInt32(File, ref seek);
 
                 Exports.Add(export);
             }

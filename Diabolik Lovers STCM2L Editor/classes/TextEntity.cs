@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -9,7 +10,7 @@ namespace Diabolik_Lovers_STCM2L_Editor.classes {
         public string Name { get; set; }
         public Action NameAction { get; set; }
 
-        public List<string> Lines { get; set; }
+        public ObservableCollection<Line> Lines { get; set; }
         public List<Action> LineActions { get; set; }
         public int LinesCount { get; set; } //TODO: Check if necessary
 
@@ -22,7 +23,7 @@ namespace Diabolik_Lovers_STCM2L_Editor.classes {
 
         public TextEntity() {
             Name = null;
-            Lines = new List<string>();
+            Lines = new ObservableCollection<Line>();
             LineActions = new List<Action>();
             LinesCount = 0;
             Actions = new List<Action>();
@@ -44,7 +45,9 @@ namespace Diabolik_Lovers_STCM2L_Editor.classes {
                 else {
                     string temp = actions[i].GetStringFromParameter(0);
 
-                    Lines.Add(temp);
+                    Line line = new Line(temp);
+
+                    Lines.Add(line);
                     LineActions.Add(actions[i]);
                     LinesCount++;
                 }
@@ -62,11 +65,18 @@ namespace Diabolik_Lovers_STCM2L_Editor.classes {
 
         public void SetAnswer(ref int i, List<Action> actions) {
             string temp = actions[i].GetStringFromParameter(0);
+            Line line = new Line(temp);
 
-            Lines.Add(temp);
+            Lines.Add(line);
             LineActions.Add(actions[i]);
             LinesCount = 1;
             IsAnswer = true;
+        }
+
+        public void ResetText() {
+            foreach(Line line in Lines) {
+                line.Reset();
+            }
         }
     }
 }

@@ -59,6 +59,7 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="classes\Global.cs" />
+    <Compile Include="classes\Line.cs" />
     <Compile Include="classes\TextEntity.cs" />
     <Compile Include="utils\ByteUtil.cs" />
     <Compile Include="utils\EncodingUtil.cs" />

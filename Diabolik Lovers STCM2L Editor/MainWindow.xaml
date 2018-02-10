@@ -5,12 +5,15 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Diabolik_Lovers_STCM2L_Editor"
         mc:Ignorable="d"
-        Title="Diabolik Lovers STC2ML Editor" Height="370.021" Width="561.335"
+        Title="Diabolik Lovers STC2ML Editor"  Height="400" Width="600"
  >
     <DockPanel>
         <Menu DockPanel.Dock="Top" IsMainMenu="True">
             <MenuItem Header="_File">
                 <MenuItem Header="_Open" Click="OpenFile"/>
+            </MenuItem>
+            <MenuItem Header="_Text">
+                <MenuItem Header="_Reset to Default" Click="ResetText"/>
             </MenuItem>
         </Menu>
         <Grid>
@@ -27,18 +30,18 @@
                 </ListBox.ItemContainerStyle>
                 <ListBox.ItemTemplate>
                     <DataTemplate>
-                        <TextBlock Text="{Binding Lines[0]}"/>
+                        <TextBlock Text="{Binding Lines[0].LineText}"/>
                     </DataTemplate>
                 </ListBox.ItemTemplate>
             </ListBox>
             <GridSplitter Grid.Column="1" HorizontalAlignment="Stretch" Width="3" />
-            <ListBox Grid.Column="2" Name="LinesList">
-                <ListBox.ItemTemplate>
+            <ListView Grid.Column="2" Name="LinesList" >
+                <ListView.ItemTemplate>
                     <DataTemplate>
-                        <TextBox Text="{Binding Path=.}"/>
+                        <TextBox Text="{Binding Path=LineText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
                     </DataTemplate>
-                </ListBox.ItemTemplate>
-            </ListBox>
+                </ListView.ItemTemplate>
+            </ListView>
         </Grid>
     </DockPanel>
 </Window>
