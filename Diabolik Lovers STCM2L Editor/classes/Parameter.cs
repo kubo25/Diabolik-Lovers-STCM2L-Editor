@@ -18,5 +18,9 @@ namespace Diabolik_Lovers_STCM2L_Editor.classes {
         public UInt32 RelativeAddress { get; set; }
         public Action GlobalPointer { get; set; }
         public ParameterType Type { get; set; }
+
+        public Parameter() {
+            GlobalPointer = null;
+        }
     }
 }

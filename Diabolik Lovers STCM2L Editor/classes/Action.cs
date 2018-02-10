@@ -103,5 +103,89 @@ namespace Diabolik_Lovers_STCM2L_Editor.classes {
 
             return EncodingUtil.encoding.GetString(byteString).TrimEnd(new char[] { '\0' });
         }
+
+        public void SetString(string str, int parameter) {
+            byte[] encodedStr = EncodingUtil.encoding.GetBytes(str);
+            UInt32 alignedLength = (UInt32) (encodedStr.Length + (4 - encodedStr.Length % 4));
+            UInt32 newExtraStart;
+
+            if (parameter == 0) {
+                Parameters[parameter].RelativeAddress = 16 + ParameterCount * 12;
+            }
+
+            if(LocalParameterCount > 1) {
+                Console.WriteLine(OldAddress);
+            }
+
+            if (Parameters[parameter].Type == ParameterType.LOCAL_PARAMETER) {
+                ExtraData = null;
+                Length -= ExtraDataLength;
+                ExtraDataLength = alignedLength + 16;
+                newExtraStart = 0;
+            }
+            else {
+                Console.Write("Not local parameter");
+                Parameters[parameter].Type = ParameterType.LOCAL_PARAMETER;
+                LocalParameterCount++;
+                newExtraStart = ExtraDataLength;
+                ExtraDataLength += alignedLength + 16;
+                
+            }
+
+            Length += alignedLength + 16;
+
+            if (newExtraStart == 0) {
+                ExtraData = new byte[ExtraDataLength];
+            }
+            else {
+                byte[] newExtraData = new byte[ExtraDataLength];
+
+                Array.Copy(ExtraData, newExtraData, ExtraData.Length);
+                ExtraData = newExtraData;
+            }
+
+            ExtraData = ByteUtil.InsertBytes(ExtraData, encodedStr, newExtraStart + 16);
+            ExtraData = ByteUtil.InsertUint32(ExtraData, 0, newExtraStart);
+            ExtraData = ByteUtil.InsertUint32(ExtraData, alignedLength / 4, newExtraStart + 4);
+            ExtraData = ByteUtil.InsertUint32(ExtraData, 1, newExtraStart + 2 * 4);
+            ExtraData = ByteUtil.InsertUint32(ExtraData, alignedLength, newExtraStart + 3 * 4);
+        }
+
+        public byte[] Write() {
+            List<byte> byteAction = new List<byte>();
+
+            byteAction.AddRange(BitConverter.GetBytes(IsLocalCall));
+            byteAction.AddRange(BitConverter.GetBytes(OpCode));
+            byteAction.AddRange(BitConverter.GetBytes(ParameterCount));
+            byteAction.AddRange(BitConverter.GetBytes(Length));
+
+            foreach(Parameter parameter in Parameters) {
+                if (parameter.Type == ParameterType.LOCAL_PARAMETER) {
+                    UInt32 localAddress = parameter.RelativeAddress + Address;
+                    byteAction.AddRange(BitConverter.GetBytes(localAddress));
+                }
+                else {
+                    byteAction.AddRange(BitConverter.GetBytes(parameter.Value1));
+                }
+
+                if (parameter.Type == ParameterType.GLOBAL_PARAMETER) {
+                    if (parameter.GlobalPointer == null) {
+                        Console.WriteLine("Lol");
+                    }
+                    byteAction.AddRange(BitConverter.GetBytes(parameter.GlobalPointer.Address));
+                }
+                else {
+                    byteAction.AddRange(BitConverter.GetBytes(parameter.Value2));
+                }
+
+                byteAction.AddRange(BitConverter.GetBytes(parameter.Value3));
+            }
+
+            if (ExtraDataLength > 0) {
+                byteAction.AddRange(ExtraData);
+            }
+
+            return byteAction.ToArray();
+        }
     }
 }

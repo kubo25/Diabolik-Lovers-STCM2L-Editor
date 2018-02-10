@@ -15,13 +15,14 @@ namespace Diabolik_Lovers_STCM2L_Editor.classes {
         public const int COLLECTION_LINK_PADDING = 0x38;
 
         public string FilePath { get; set; }
-        public byte[] File { get; set; }
+        public byte[] OriginalFile { get; set; }
+        public List<byte> NewFile { get; set; }
 
         public UInt32 StartPosition { get; set; }
         public byte[] StartData { get; set; }
 
         public UInt32 ExportsPosition { get; set; }
-        public int ExportsCount { get; set; }
+        public UInt32 ExportsCount { get; set; }
         public List<Export> Exports { get; set; }
 
         public UInt32 CollectionLinkPosition { get; set; }
@@ -36,11 +37,12 @@ namespace Diabolik_Lovers_STCM2L_Editor.classes {
             Exports = new List<Export>();
             Actions = new List<Action>();
             Texts = new ObservableCollection<TextEntity>();
+            NewFile = new List<byte>();
         }
 
         public bool Load() {
             try {
-                File = System.IO.File.ReadAllBytes(FilePath);
+                OriginalFile = File.ReadAllBytes(FilePath);
                 StartPosition = FindStart();
 
                 Console.WriteLine("Start at: 0x{0:X}", StartPosition);
@@ -64,9 +66,84 @@ namespace Diabolik_Lovers_STCM2L_Editor.classes {
             }
         }
 
+        public bool Save(string filePath) {
+            try {
+                foreach(TextEntity text in Texts) {
+                    text.ReinsertLines();
+                }
+
+                UInt32 newExportsAddress = StartPosition + GetActionsLength() + 12; // + EXPORT_DATA.Length
+                UInt32 newCollectionLinkAddress = newExportsAddress + ExportsCount * EXPORT_SIZE + 16; // + COLLECTION_LINK.length
+
+                StartData = ByteUtil.InsertUint32(StartData, newExportsAddress, HEADER_OFFSET);
+                StartData = ByteUtil.InsertUint32(StartData, newCollectionLinkAddress, HEADER_OFFSET + 3 * 4);
+
+                NewFile.AddRange(StartData);
+
+                WriteActions();
+                WriteExports();
+                WriteCollectionLink();
+
+                File.WriteAllBytes(filePath, NewFile.ToArray());
+                return true;
+            }
+            catch (Exception e) {
+                Console.WriteLine(e);
+                return false;
+            }
+        }
+
+        private void WriteActions() {
+            SetAddresses();
+            
+            foreach(Action action in Actions) {
+                NewFile.AddRange(action.Write());
+            }
+        }
+
+        private void SetAddresses() {
+            UInt32 address = StartPosition;
+
+            foreach(Action action in Actions) {
+                action.Address = address;
+                address += action.Length;
+            }
+        }
+
+        private void WriteExports() {
+            NewFile.AddRange(EncodingUtil.encoding.GetBytes("EXPORT_DATA"));
+            NewFile.Add(new byte());
+
+            foreach (Export export in Exports) {
+                NewFile.AddRange(export.Write());
+            }
+        }
+
+        private void WriteCollectionLink() {
+            NewFile.AddRange(EncodingUtil.encoding.GetBytes("COLLECTION_LINK"));
+            NewFile.Add(new byte());
+            NewFile.AddRange(BitConverter.GetBytes(0));
+
+            UInt32 newCollectionLinkAddress = (UInt32) NewFile.Count + 4 + COLLECTION_LINK_PADDING;
+
+            NewFile.AddRange(BitConverter.GetBytes(newCollectionLinkAddress));
+            NewFile.AddRange(new byte[COLLECTION_LINK_PADDING]);
+
+        }
+
+        private UInt32 GetActionsLength() {
+            UInt32 length = 0;
+
+            foreach(Action action in Actions) {
+                length += action.Length;
+            }
+
+            return length;
+        }
+
         private void ReadStartData () {
             int seek = 0;
-            StartData = ByteUtil.ReadBytes(File, StartPosition, ref seek);
+            StartData = ByteUtil.ReadBytes(OriginalFile, StartPosition, ref seek);
 
             seek = HEADER_OFFSET;
             ExportsPosition = ByteUtil.ReadUInt32(StartData, ref seek);
@@ -79,9 +156,9 @@ namespace Diabolik_Lovers_STCM2L_Editor.classes {
             byte[] start = EncodingUtil.encoding.GetBytes("CODE_START_");
 
             for (int i = 0; i < 2000; i++) {
-                if (File[i] == start[0]) {
+                if (OriginalFile[i] == start[0]) {
                     for (int j = 0; j < start.Length; j++) {
-                        if (File[i + j] != start[j]) {
+                        if (OriginalFile[i + j] != start[j]) {
                             break;
                         }
                         else if (j + 1 == start.Length) {
@@ -96,11 +173,11 @@ namespace Diabolik_Lovers_STCM2L_Editor.classes {
 
         private void ReadCollectionLink() {
             int seek = (int)CollectionLinkPosition + 4;
-            CollectionLinkOldAddress = ByteUtil.ReadUInt32(File, ref seek);
+            CollectionLinkOldAddress = ByteUtil.ReadUInt32(OriginalFile, ref seek);
         }
 
         private void ReadExports () {
-            int exportsLength = (int) (CollectionLinkPosition - ExportsPosition);
+            UInt32 exportsLength = CollectionLinkPosition - ExportsPosition;
             ExportsCount = exportsLength / EXPORT_SIZE;
 
             int seek = (int)ExportsPosition;
@@ -110,8 +187,8 @@ namespace Diabolik_Lovers_STCM2L_Editor.classes {
 
                 seek += 4;
 
-                export.Name = EncodingUtil.encoding.GetString(ByteUtil.ReadBytes(File, 32, ref seek));
-                export.OldAddress = ByteUtil.ReadUInt32(File, ref seek);
+                export.Name = EncodingUtil.encoding.GetString(ByteUtil.ReadBytes(OriginalFile, 32, ref seek));
+                export.OldAddress = ByteUtil.ReadUInt32(OriginalFile, ref seek);
 
                 Exports.Add(export);
             }
@@ -127,7 +204,7 @@ namespace Diabolik_Lovers_STCM2L_Editor.classes {
                 Action action = new Action();
                 i++;
 
-                action.ReadFromFile(currentAddress, File);
+                action.ReadFromFile(currentAddress, OriginalFile);
 
                 if(currentExport < Exports.Count && Exports[currentExport].OldAddress == currentAddress) {
                     Exports[currentExport].ExportedAction = action;

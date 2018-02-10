@@ -11,6 +11,7 @@
         <Menu DockPanel.Dock="Top" IsMainMenu="True">
             <MenuItem Header="_File">
                 <MenuItem Header="_Open" Click="OpenFile"/>
+                <MenuItem Header="_Save As..." Click="SaveAs"/>
             </MenuItem>
             <MenuItem Header="_Text">
                 <MenuItem Header="_Reset to Default" Click="ResetText"/>

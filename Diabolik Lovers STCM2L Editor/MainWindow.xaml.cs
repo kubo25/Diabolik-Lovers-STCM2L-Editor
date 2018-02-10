@@ -53,7 +53,19 @@ namespace Diabolik_Lovers_STCM2L_Editor {
         }
 
         private void ResetText(object sender, RoutedEventArgs e) {
-            (LinesList.DataContext as TextEntity).ResetText();
+            if(LinesList.DataContext != null) {
+                (LinesList.DataContext as TextEntity).ResetText();
+            }
+        }
+
+        private void SaveAs(object sender, RoutedEventArgs e) {
+            SaveFileDialog saveFileDialog = new SaveFileDialog();
+
+            if (saveFileDialog.ShowDialog() == true) {
+                if (!stcm2l.Save(saveFileDialog.FileName)) {
+                    Console.WriteLine("Failed to save.");
+                }
+            }
         }
     }
 }

@@ -78,5 +78,15 @@ namespace Diabolik_Lovers_STCM2L_Editor.classes {
                 line.Reset();
             }
         }
+
+        public void ReinsertLines () {
+            if(Name != null) {
+                NameAction.SetString(Name, 0);
+            }
+
+            for(int i = 0; i < LinesCount; i++) {
+                LineActions[i].SetString(Lines[i].LineText, 0);
+            }
+        }
     }
 }
