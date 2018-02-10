@@ -12,7 +12,6 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 using Diabolik_Lovers_STCM2L_Editor.classes;
 
@@ -52,7 +51,7 @@ namespace Diabolik_Lovers_STCM2L_Editor {
             LinesList.SetBinding(ItemsControl.ItemsSourceProperty, binding);
         }
 
-        private void ResetText(object sender, RoutedEventArgs e) {
+        private void ResetAllText(object sender, RoutedEventArgs e) {
             if(LinesList.DataContext != null) {
                 (LinesList.DataContext as TextEntity).ResetText();
             }
@@ -66,6 +65,10 @@ namespace Diabolik_Lovers_STCM2L_Editor {
                     Console.WriteLine("Failed to save.");
                 }
             }
+        }
+
+        private void ResetLine (object sender, RoutedEventArgs e) {
+            ((sender as Button).DataContext as Line).Reset();
         }
     }
 }
