@@ -267,7 +267,7 @@ namespace Diabolik_Lovers_STCM2L_Editor.classes {
             TextEntity text = new TextEntity(Actions, Texts[index].ActionsEnd, name);
 
             Texts.Insert(index + 1, text);
-            AddLine(index, text.AmountInserted);
+            AddLine(index + 1, text.AmountInserted);
         }
 
         public void AddLine(int index, int amount) {

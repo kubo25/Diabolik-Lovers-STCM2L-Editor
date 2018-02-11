@@ -1,8 +1,9 @@
-﻿<Window x:Class="Diabolik_Lovers_STCM2L_Editor.MainWindow"
+﻿<controls:MetroWindow x:Class="Diabolik_Lovers_STCM2L_Editor.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
         xmlns:local="clr-namespace:Diabolik_Lovers_STCM2L_Editor"
         mc:Ignorable="d"
         Title="Diabolik Lovers STC2ML Editor"  Height="400" Width="600"
@@ -38,7 +39,7 @@
                     </ListBox.ItemContainerStyle>
                     <ListBox.ItemTemplate>
                         <DataTemplate>
-                             <TextBlock Text="{Binding Lines[0].LineText}"/>
+                            <TextBlock DockPanel.Dock="Right" Text="{Binding Lines[0].LineText}"/>
                         </DataTemplate>
                     </ListBox.ItemTemplate>
                 </ListBox>
@@ -58,10 +59,10 @@
                     <ListView.ItemTemplate>
                         <DataTemplate>
                             <DockPanel>
-                                <TextBox DockPanel.Dock="Left" Text="{Binding Path=LineText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                                <TextBox DockPanel.Dock="Left" Text="{Binding Path=LineText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MinWidth="100px"/>
                                 <Button DockPanel.Dock="Right" Content="Reset" DataContext="{Binding}" HorizontalAlignment="Right" Click="ResetLine">
                                     <Button.Style>
-                                        <Style TargetType="{x:Type Button}">
+                                        <Style TargetType="{x:Type Button}" BasedOn="{StaticResource {x:Type Button}}">
                                             <Setter Property="Visibility" Value="Hidden" />
                                             <Style.Triggers>
                                                 <DataTrigger Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor,AncestorType={x:Type ListBoxItem}},Path=IsMouseOver}" Value="True">
@@ -78,4 +79,4 @@
             </Grid>
         </Grid>
     </DockPanel>
-</Window>
+</controls:MetroWindow>

@@ -14,9 +14,10 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 
 using Diabolik_Lovers_STCM2L_Editor.classes;
+using MahApps.Metro.Controls;
 
 namespace Diabolik_Lovers_STCM2L_Editor {
-    public partial class MainWindow : Window {
+    public partial class MainWindow : MetroWindow {
         private STCM2L stcm2l;
 
         public MainWindow() {
@@ -30,6 +31,7 @@ namespace Diabolik_Lovers_STCM2L_Editor {
                 stcm2l = new STCM2L(openFileDialog.FileName);
 
                 if (stcm2l.Load()) {
+                    TextsList.DataContext = stcm2l.Texts;
                     TextsList.ItemsSource = stcm2l.Texts;
                 }
                 else {
@@ -62,27 +64,35 @@ namespace Diabolik_Lovers_STCM2L_Editor {
             SaveFileDialog saveFileDialog = new SaveFileDialog();
 
             if (saveFileDialog.ShowDialog() == true) {
-                if (!stcm2l.Save(saveFileDialog.FileName)) {
+                if (stcm2l == null || !stcm2l.Save(saveFileDialog.FileName)) {
                     Console.WriteLine("Failed to save.");
                 }
             }
         }
 
         private void ResetLine(object sender, RoutedEventArgs e) {
-            ((sender as Button).DataContext as Line).Reset();
+            if ((sender as Button).DataContext as Line != null) {
+                ((sender as Button).DataContext as Line).Reset();
+            }
         }
 
         private void ResetName(object sender, RoutedEventArgs e) {
-            (NameBox.DataContext as TextEntity).ResetName();
+            if (NameBox.DataContext as TextEntity != null) {
+                (NameBox.DataContext as TextEntity).ResetName();
+            }
         }
 
         private void AddNewLineClick(object sender, RoutedEventArgs e) {
-            (LinesList.DataContext as TextEntity).AddLine();
-            stcm2l.AddLine(TextsList.SelectedIndex, 1);
+            if (LinesList.DataContext as TextEntity != null) {
+                (LinesList.DataContext as TextEntity).AddLine();
+                stcm2l.AddLine(TextsList.SelectedIndex, 1);
+            }
         }
 
         private void InsertNewTextClick(object sender, RoutedEventArgs e) {
-            stcm2l.InsertText(TextsList.SelectedIndex);
+            if (TextsList.SelectedIndex != -1) {
+                stcm2l.InsertText(TextsList.SelectedIndex);
+            }
         }
     }
 }
