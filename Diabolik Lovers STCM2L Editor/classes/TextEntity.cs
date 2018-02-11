@@ -46,6 +46,13 @@ namespace Diabolik_Lovers_STCM2L_Editor.classes {
                 Actions.Insert(ActionsEnd + AmountInserted, NameAction);
                 AmountInserted++;
             }
+            else {
+                Actions.Insert(ActionsEnd, new Action(0, Action.ACTION_NEW_PAGE, 0));
+                AmountInserted++;
+
+                Actions.Insert(ActionsEnd, new Action(0, Action.ACTION_DIVIDER, 0));
+                AmountInserted++;
+            }
 
             Lines = new ObservableCollection<Line>();
             LineActions = new List<Action>();

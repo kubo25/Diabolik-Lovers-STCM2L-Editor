@@ -12,6 +12,7 @@ namespace Diabolik_Lovers_STCM2L_Editor.classes {
         public const UInt32 ACTION_TEXT = 0xd2;
         public const UInt32 ACTION_CHOICE = 0xe7;
         public const UInt32 ACTION_DIVIDER = 0xd3;
+        public const UInt32 ACTION_NEW_PAGE = 0x1c1;
 
         public UInt32 Length { get; set; }
         public UInt32 ParameterCount { get; set; }
