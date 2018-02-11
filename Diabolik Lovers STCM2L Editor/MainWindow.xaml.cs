@@ -68,12 +68,21 @@ namespace Diabolik_Lovers_STCM2L_Editor {
             }
         }
 
-        private void ResetLine (object sender, RoutedEventArgs e) {
+        private void ResetLine(object sender, RoutedEventArgs e) {
             ((sender as Button).DataContext as Line).Reset();
         }
 
-        private void ResetName (object sender, RoutedEventArgs e) {
+        private void ResetName(object sender, RoutedEventArgs e) {
             (NameBox.DataContext as TextEntity).ResetName();
+        }
+
+        private void AddNewLineClick(object sender, RoutedEventArgs e) {
+            (LinesList.DataContext as TextEntity).AddLine();
+            stcm2l.AddLine(TextsList.SelectedIndex, 1);
+        }
+
+        private void InsertNewTextClick(object sender, RoutedEventArgs e) {
+            stcm2l.InsertText(TextsList.SelectedIndex);
         }
     }
 }

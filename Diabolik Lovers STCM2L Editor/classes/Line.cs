@@ -20,7 +20,7 @@ namespace Diabolik_Lovers_STCM2L_Editor.classes {
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        public Line (string line) {
+        public Line(string line) {
             OriginalLineText = line;
             _LineText = line;
         }

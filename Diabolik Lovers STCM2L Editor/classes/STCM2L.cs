@@ -256,5 +256,24 @@ namespace Diabolik_Lovers_STCM2L_Editor.classes {
 
             Console.WriteLine("Read {0} texts.", Texts.Count);
         }
+
+        public void InsertText (int index) {
+            string name = null;
+
+            if (Texts[index].Name != null) {
+                name = Texts[index].Name.LineText;
+            }
+
+            TextEntity text = new TextEntity(Actions, Texts[index].ActionsEnd, name);
+
+            Texts.Insert(index + 1, text);
+            AddLine(index, text.AmountInserted);
+        }
+
+        public void AddLine(int index, int amount) {
+            for(int i = index; i < Texts.Count; i++) {
+                Texts[i].ActionsEnd += amount;
+            }
+        }
     }
 }

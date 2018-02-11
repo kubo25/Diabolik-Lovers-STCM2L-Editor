@@ -11,6 +11,7 @@ namespace Diabolik_Lovers_STCM2L_Editor.classes {
         public const UInt32 ACTION_NAME = 0xd4;
         public const UInt32 ACTION_TEXT = 0xd2;
         public const UInt32 ACTION_CHOICE = 0xe7;
+        public const UInt32 ACTION_DIVIDER = 0xd3;
 
         public UInt32 Length { get; set; }
         public UInt32 ParameterCount { get; set; }
@@ -26,6 +27,30 @@ namespace Diabolik_Lovers_STCM2L_Editor.classes {
         public List<Parameter> Parameters { get; set; }
 
         public Action() {
+            Init();
+        }
+
+        public Action(UInt32 isLocalCall, UInt32 opCode, UInt32 parameterCount) {
+            Init();
+
+            IsLocalCall = isLocalCall;
+            OpCode = opCode;
+            ParameterCount = parameterCount;
+            Length = 16 + parameterCount * 12;
+
+            for(int i = 0; i < parameterCount; i++) {
+                Parameter parameter = new Parameter();
+
+                parameter.Value1 = 0xff000000;
+                parameter.Value2 = 0xff000000;
+                parameter.Value3 = 0xff000000;
+                parameter.Type = ParameterType.VALUE;
+
+                Parameters.Add(parameter);
+            }
+        }
+
+        private void Init() {
             Length = 0;
             ParameterCount = 0;
             LocalParameterCount = 0;
