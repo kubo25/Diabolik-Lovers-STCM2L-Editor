@@ -41,6 +41,7 @@ namespace Diabolik_Lovers_STCM2L_Editor {
 
         private void ListBoxItemClick(object sender, MouseButtonEventArgs e) {
             LinesList.DataContext = (sender as ListBoxItem).DataContext;
+            NameBox.DataContext = (sender as ListBoxItem).DataContext;
 
             Binding binding = new Binding();
             binding.Path = new PropertyPath("Lines");
@@ -69,6 +70,10 @@ namespace Diabolik_Lovers_STCM2L_Editor {
 
         private void ResetLine (object sender, RoutedEventArgs e) {
             ((sender as Button).DataContext as Line).Reset();
+        }
+
+        private void ResetName (object sender, RoutedEventArgs e) {
+            (NameBox.DataContext as TextEntity).ResetName();
         }
     }
 }

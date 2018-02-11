@@ -14,6 +14,7 @@
                 <MenuItem Header="_Save As..." Click="SaveAs"/>
             </MenuItem>
             <MenuItem Header="_Text">
+                <MenuItem Header="_Reset Name" Click="ResetName"/>
                 <MenuItem Header="_Reset to Default" Click="ResetAllText"/>
             </MenuItem>
         </Menu>
@@ -36,27 +37,38 @@
                 </ListBox.ItemTemplate>
             </ListBox>
             <GridSplitter Grid.Column="1" HorizontalAlignment="Stretch" Width="3" />
-            <ListView Grid.Column="2" Name="LinesList" HorizontalContentAlignment="Stretch">
-                <ListView.ItemTemplate>
-                    <DataTemplate>
-                        <DockPanel>
-                            <TextBox DockPanel.Dock="Left" Text="{Binding Path=LineText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-                            <Button DockPanel.Dock="Right" Content="Reset" DataContext="{Binding}" HorizontalAlignment="Right" Click="ResetLine">
-                                <Button.Style>
-                                    <Style TargetType="{x:Type Button}">
-                                        <Setter Property="Visibility" Value="Hidden" />
-                                        <Style.Triggers>
-                                            <DataTrigger Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor,AncestorType={x:Type ListBoxItem}},Path=IsMouseOver}" Value="True">
-                                                <Setter Property="Visibility" Value="Visible" />
-                                            </DataTrigger>
-                                        </Style.Triggers>
-                                    </Style>
-                                </Button.Style>
-                            </Button>
-                        </DockPanel>
-                    </DataTemplate>
-                </ListView.ItemTemplate>
-            </ListView>
+            <Grid Grid.Column="2">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="30"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <DockPanel Grid.Row="0">
+                    <Label VerticalAlignment="Center" Content="Name: "/>
+                    <TextBox Width="161" Name="NameBox" Text="{Binding Path=Name.LineText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Center"/>
+                    <Button DockPanel.Dock="Right" HorizontalAlignment="Right" Content="Add text box" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                </DockPanel>
+                <ListView Grid.Row="1" Name="LinesList" HorizontalContentAlignment="Stretch">
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <DockPanel>
+                                <TextBox DockPanel.Dock="Left" Text="{Binding Path=LineText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                                <Button DockPanel.Dock="Right" Content="Reset" DataContext="{Binding}" HorizontalAlignment="Right" Click="ResetLine">
+                                    <Button.Style>
+                                        <Style TargetType="{x:Type Button}">
+                                            <Setter Property="Visibility" Value="Hidden" />
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor,AncestorType={x:Type ListBoxItem}},Path=IsMouseOver}" Value="True">
+                                                    <Setter Property="Visibility" Value="Visible" />
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Button.Style>
+                                </Button>
+                            </DockPanel>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+            </Grid>
         </Grid>
     </DockPanel>
 </Window>

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Diabolik_Lovers_STCM2L_Editor.classes {
     class TextEntity {
-        public string Name { get; set; }
+        public Line Name { get; set; }
         public Action NameAction { get; set; }
 
         public ObservableCollection<Line> Lines { get; set; }
@@ -38,7 +38,7 @@ namespace Diabolik_Lovers_STCM2L_Editor.classes {
             while (opCode == Action.ACTION_NAME || opCode == Action.ACTION_TEXT) {
                 if (opCode == Action.ACTION_NAME) {
                     if (Name == null) {
-                        Name = actions[i].GetStringFromParameter(0);
+                        Name = new Line(actions[i].GetStringFromParameter(0));
                         NameAction = actions[i];
                     }
                 }
@@ -74,14 +74,22 @@ namespace Diabolik_Lovers_STCM2L_Editor.classes {
         }
 
         public void ResetText() {
+            ResetName();
+
             foreach(Line line in Lines) {
                 line.Reset();
             }
         }
 
+        public void ResetName() {
+            if(Name != null) {
+                Name.Reset();
+            }
+        }
+
         public void ReinsertLines () {
             if(Name != null) {
-                NameAction.SetString(Name, 0);
+                NameAction.SetString(Name.LineText, 0);
             }
 
             for(int i = 0; i < LinesCount; i++) {
