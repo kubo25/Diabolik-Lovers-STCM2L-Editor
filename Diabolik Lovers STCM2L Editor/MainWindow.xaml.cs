@@ -25,27 +25,49 @@ namespace Diabolik_Lovers_STCM2L_Editor {
             InitializeComponent();
         }
 
-        private void OpenFile(object sender, RoutedEventArgs e) {
+        private void OpenFileCommad(object sender, ExecutedRoutedEventArgs e) {
             OpenFileDialog openFileDialog = new OpenFileDialog();
 
             if (openFileDialog.ShowDialog() == true) {
-                stcm2l = new STCM2L(openFileDialog.FileName);
+                OpenFile(openFileDialog.FileName);
+            }
+        }
 
-                Title = Path.GetFileName(openFileDialog.FileName);
+        private void OpenFile(string path) {
+            stcm2l = new STCM2L(path);
 
-                if (stcm2l.Load()) {
-                    TextsList.DataContext = stcm2l.Texts;
-                    TextsList.ItemsSource = stcm2l.Texts;
+            Title = Path.GetFileName(path);
 
-                    LinesList.DataContext = null;
-                    LinesList.ItemsSource = null;
+            if (stcm2l.Load()) {
+                TextsList.DataContext = stcm2l.Texts;
+                TextsList.ItemsSource = stcm2l.Texts;
 
-                    NameBox.DataContext = null;
+                LinesList.DataContext = null;
+                LinesList.ItemsSource = null;
+
+                NameBox.DataContext = null;
+            }
+            else {
+                Console.WriteLine("Invalid File");
+            }
+        }
+
+        private void SaveAsCommand(object sender, ExecutedRoutedEventArgs e) {
+            SaveFileDialog saveFileDialog = new SaveFileDialog();
+
+            if (saveFileDialog.ShowDialog() == true) {
+                if (stcm2l == null || !stcm2l.Save(saveFileDialog.FileName)) {
+                    Console.WriteLine("Failed to save.");
                 }
                 else {
-                   Console.WriteLine("Invalid File");
+                    OpenFile(saveFileDialog.FileName);
                 }
+            }
+        }
 
+        private void SaveCommand(object sender, ExecutedRoutedEventArgs e) {
+            if (stcm2l == null || !stcm2l.Save(stcm2l.FilePath)) {
+                Console.WriteLine("Failed to save.");
             }
         }
 
@@ -62,29 +84,17 @@ namespace Diabolik_Lovers_STCM2L_Editor {
             LinesList.SetBinding(ItemsControl.ItemsSourceProperty, binding);
         }
 
-        private void ResetAllText(object sender, RoutedEventArgs e) {
-            if(LinesList.DataContext != null) {
+        private void ResetAllTextClick(object sender, RoutedEventArgs e) {
+            if (LinesList.DataContext != null) {
                 (LinesList.DataContext as TextEntity).ResetText();
             }
         }
 
-        private void SaveAs(object sender, RoutedEventArgs e) {
-            SaveFileDialog saveFileDialog = new SaveFileDialog();
-
-            if (saveFileDialog.ShowDialog() == true) {
-                if (stcm2l == null || !stcm2l.Save(saveFileDialog.FileName)) {
-                    Console.WriteLine("Failed to save.");
-                }
-            }
+        private void ResetLineClick(object sender, RoutedEventArgs e) {
+            ((sender as MenuItem).DataContext as TextEntity).Lines[LinesList.SelectedIndex].Reset();
         }
 
-        private void ResetLine(object sender, RoutedEventArgs e) {
-            if ((sender as Button).DataContext as Line != null) {
-                ((sender as Button).DataContext as Line).Reset();
-            }
-        }
-
-        private void ResetName(object sender, RoutedEventArgs e) {
+        private void ResetNameClick(object sender, RoutedEventArgs e) {
             if (NameBox.DataContext as TextEntity != null) {
                 (NameBox.DataContext as TextEntity).ResetName();
             }
@@ -92,14 +102,33 @@ namespace Diabolik_Lovers_STCM2L_Editor {
 
         private void AddNewLineClick(object sender, RoutedEventArgs e) {
             if (LinesList.DataContext as TextEntity != null) {
-                (LinesList.DataContext as TextEntity).AddLine();
+                InsertLine();
                 stcm2l.AddLine(TextsList.SelectedIndex, 1);
             }
         }
 
+        private void InsertNewLineBeforeClick(object sender, RoutedEventArgs e) {
+            if (LinesList.DataContext as TextEntity != null) {
+                InsertLine(LinesList.SelectedIndex);
+                stcm2l.AddLine(TextsList.SelectedIndex, 1);
+            }
+        }
+
+        private void InsertNewLineAfterClick(object sender, RoutedEventArgs e) {
+            if (LinesList.DataContext as TextEntity != null) {
+                InsertLine(LinesList.SelectedIndex + 1);
+                stcm2l.AddLine(TextsList.SelectedIndex, 1);
+            }
+        }
+
+        private void InsertLine(int index = -1) {
+            (LinesList.DataContext as TextEntity).AddLine(false, index);
+        }
+
         private void DeleteLineClick(object sender, RoutedEventArgs e) {
-            ((sender as MenuItem).DataContext as TextEntity).DeleteLine(LinesList.SelectedIndex);
-            stcm2l.DeleteLine(LinesList.SelectedIndex, 1);
+            int index = LinesList.SelectedIndex;
+            ((sender as MenuItem).DataContext as TextEntity).DeleteLine(index);
+            stcm2l.DeleteLine(index, 1);
         }
 
         private void InsertNewTextAfterClick(object sender, RoutedEventArgs e) {

@@ -287,7 +287,7 @@ namespace Diabolik_Lovers_STCM2L_Editor.classes {
 
         public void DeleteText(int index) {
             Texts[index].DeleteText();
-            DeleteLine(index, Texts[index].AmountInserted + Texts[index].Lines.Count);
+            DeleteLine(index, Texts[index].AmountInserted);
             Texts.Remove(Texts[index]);
         }
 

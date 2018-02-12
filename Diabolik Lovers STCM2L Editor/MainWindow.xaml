@@ -6,17 +6,42 @@
         xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
         xmlns:local="clr-namespace:Diabolik_Lovers_STCM2L_Editor"
         mc:Ignorable="d"
-        Title="Diabolik Lovers STC2ML Editor"  Height="720" Width="1280"
+        Title="Diabolik Lovers STC2ML Editor"  Height="720" Width="1280"            
+        BorderBrush="{DynamicResource AccentColorBrush}"
+        BorderThickness="1"
  >
+    <Window.CommandBindings>
+        <CommandBinding Command="Open" Executed="OpenFileCommad"/>
+        <CommandBinding Command="Save" Executed="SaveCommand"/>
+        <CommandBinding Command="SaveAs" Executed="SaveAsCommand"/>
+    </Window.CommandBindings>
+    <Window.InputBindings>
+        <KeyBinding Gesture="Ctrl+O" Command="Open"/>
+        <KeyBinding Gesture="Ctrl+S" Command="Save"/>
+        <KeyBinding Gesture="Ctrl+Shift+S" Command="SaveAs"/>
+    </Window.InputBindings>
     <DockPanel>
         <Menu DockPanel.Dock="Top" IsMainMenu="True">
             <MenuItem Header="_File">
-                <MenuItem Header="_Open" Click="OpenFile"/>
-                <MenuItem Header="_Save As..." Click="SaveAs"/>
+                <MenuItem 
+                    Header="_Open" 
+                    Command="Open"
+                    InputGestureText="Ctrl+O"
+                />
+                <MenuItem 
+                    Header="_Save" 
+                    Command="Save"
+                    InputGestureText="Ctrl+S" 
+                />
+                <MenuItem 
+                    Header="_Save As..." 
+                    Command="SaveAs"
+                    InputGestureText="Ctrl+Shift+S"
+                />
             </MenuItem>
             <MenuItem Header="_Text">
-                <MenuItem Header="_Reset Name" Click="ResetName"/>
-                <MenuItem Header="_Reset to Default" Click="ResetAllText"/>
+                <MenuItem Header="_Reset Name" Click="ResetNameClick"/>
+                <MenuItem Header="_Reset to Default" Click="ResetAllTextClick"/>
             </MenuItem>
         </Menu>
         <Grid>
@@ -54,34 +79,55 @@
                     <RowDefinition Height="40"/>
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
-                <DockPanel Grid.Row="0">
-                    <Label VerticalAlignment="Center" Content="Name: "/>
-                    <TextBox Width="161" Name="NameBox" Text="{Binding Path=Name.LineText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Center"/>
-                    <Button DockPanel.Dock="Right" HorizontalAlignment="Right" Content="Add new line" VerticalAlignment="Center" Margin="0,0,10,0" Click="AddNewLineClick"/>
-                </DockPanel>
-                <ListView Grid.Row="1" Name="LinesList" HorizontalContentAlignment="Stretch">
+                <Grid Grid.Row="0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="50"/>
+                        <ColumnDefinition Width="200"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Label 
+                        Grid.Column="0"
+                        HorizontalAlignment="Left"
+                        VerticalAlignment="Center" 
+                        Content="Name: "
+                    />
+                    <TextBox 
+                        Grid.Column="1"
+                        Name="NameBox" 
+                        Text="{Binding Path=Name.LineText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+                        MaxLength="20"
+                        VerticalAlignment="Center"
+                        HorizontalAlignment="Stretch"
+                    />
+                    <Button 
+                        Grid.Column="2"
+                        HorizontalAlignment="Right" 
+                        Content="Add new line" 
+                        VerticalAlignment="Center" 
+                        Margin="0,0,10,0" 
+                        Click="AddNewLineClick"
+                    />
+                </Grid>
+                <ListView Grid.Row="1" Name="LinesList">
                     <ListView.ContextMenu>
                         <ContextMenu>
+                            <MenuItem Header="Insert new line:">
+                                <MenuItem Header="Before" Click="InsertNewLineBeforeClick"/>
+                                <MenuItem Header="After" Click="InsertNewLineAfterClick"/>
+                            </MenuItem>
+                            <MenuItem Header="Reset" Click="ResetLineClick"/>
                             <MenuItem Header="Delete" Click="DeleteLineClick"/>
                         </ContextMenu>
                     </ListView.ContextMenu>
                     <ListView.ItemTemplate>
                         <DataTemplate>
-                            <DockPanel>
-                                <TextBox DockPanel.Dock="Left" Text="{Binding Path=LineText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MinWidth="100px"/>
-                                <Button DockPanel.Dock="Right" Content="Reset" DataContext="{Binding}" HorizontalAlignment="Right" Click="ResetLine">
-                                    <Button.Style>
-                                        <Style TargetType="{x:Type Button}" BasedOn="{StaticResource {x:Type Button}}">
-                                            <Setter Property="Visibility" Value="Hidden" />
-                                            <Style.Triggers>
-                                                <DataTrigger Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor,AncestorType={x:Type ListBoxItem}},Path=IsMouseOver}" Value="True">
-                                                    <Setter Property="Visibility" Value="Visible" />
-                                                </DataTrigger>
-                                            </Style.Triggers>
-                                        </Style>
-                                    </Button.Style>
-                                </Button>
-                            </DockPanel>
+                            <TextBox 
+                                DockPanel.Dock="Left" 
+                                Text="{Binding Path=LineText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+                                MaxLength="40"
+                                MinWidth="100px" 
+                                HorizontalAlignment="Left"
+                            />
                         </DataTemplate>
                     </ListView.ItemTemplate>
                 </ListView>

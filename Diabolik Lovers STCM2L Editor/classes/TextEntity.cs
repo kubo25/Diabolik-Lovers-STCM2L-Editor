@@ -133,14 +133,21 @@ namespace Diabolik_Lovers_STCM2L_Editor.classes {
             }
         }
 
-        public void AddLine(bool isNew = false) {
-            if (!IsAnswer && Lines.Count <= 3) {
+        public void AddLine(bool isNew = false, int index = -1) {
+            if (!IsAnswer && Lines.Count < 3) {
                 Action action = new Action(0, Action.ACTION_TEXT, 1);
                 Line line = new Line("");
 
-                Lines.Add(line);
-                LineActions.Add(action);
-                Actions.Insert(ActionsEnd + (isNew ? AmountInserted : 0), action);
+                if(index == -1 || index == Lines.Count) {
+                    Lines.Add(line);
+                    LineActions.Add(action);
+                    Actions.Insert(ActionsEnd + (isNew ? AmountInserted : 0), action);
+                }
+                else {
+                    Lines.Insert(index, line);
+                    LineActions.Insert(index, action);
+                    Actions.Insert(ActionsEnd - (index == 0 ? 1 : index), action);
+                }
 
                 AmountInserted++;
             }
