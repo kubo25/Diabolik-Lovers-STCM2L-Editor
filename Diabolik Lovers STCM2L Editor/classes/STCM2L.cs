@@ -257,17 +257,38 @@ namespace Diabolik_Lovers_STCM2L_Editor.classes {
             Console.WriteLine("Read {0} texts.", Texts.Count);
         }
 
-        public void InsertText (int index, bool newPage) {
+        public void InsertText (int index, bool before, bool newPage) {
             string name = null;
 
             if (Texts[index].Name != null) {
                 name = Texts[index].Name.LineText;
             }
 
-            TextEntity text = new TextEntity(Actions, Texts[index].ActionsEnd, name, newPage);
+            int actionsEnd;
 
-            Texts.Insert(index + 1, text);
-            AddLine(index + 1, text.AmountInserted);
+            if(before) {
+                actionsEnd = Texts[index].ActionsEnd - Texts[index].Lines.Count - (name != null ? 1 : 0);
+            }
+            else {
+                actionsEnd = Texts[index].ActionsEnd;
+            }
+
+            TextEntity text = new TextEntity(Actions, actionsEnd, name, newPage, before);
+
+            if (before) {
+                Texts.Insert(index, text);
+                AddLine(index, text.AmountInserted);
+            }
+            else {
+                Texts.Insert(index + 1, text);
+                AddLine(index + 1, text.AmountInserted);
+            }
+        }
+
+        public void DeleteText(int index) {
+            Texts[index].DeleteText();
+            DeleteLine(index, Texts[index].AmountInserted + Texts[index].Lines.Count);
+            Texts.Remove(Texts[index]);
         }
 
         public void AddLine(int index, int amount) {
@@ -275,5 +296,12 @@ namespace Diabolik_Lovers_STCM2L_Editor.classes {
                 Texts[i].ActionsEnd += amount;
             }
         }
+
+        public void DeleteLine(int index, int amount) {
+            for(int i = index; i < Texts.Count; i++) {
+                Texts[i].ActionsEnd -= amount;
+            }
+        }
+
     }
 }

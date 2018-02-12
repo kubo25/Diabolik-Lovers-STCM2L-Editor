@@ -150,7 +150,6 @@ namespace Diabolik_Lovers_STCM2L_Editor.classes {
                 newExtraStart = 0;
             }
             else {
-                Console.Write("Not local parameter");
                 Parameters[parameter].Type = ParameterType.LOCAL_PARAMETER;
                 LocalParameterCount++;
                 newExtraStart = ExtraDataLength;

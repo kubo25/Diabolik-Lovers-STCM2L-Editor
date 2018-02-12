@@ -6,7 +6,7 @@
         xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
         xmlns:local="clr-namespace:Diabolik_Lovers_STCM2L_Editor"
         mc:Ignorable="d"
-        Title="Diabolik Lovers STC2ML Editor"  Height="400" Width="600"
+        Title="Diabolik Lovers STC2ML Editor"  Height="720" Width="1280"
  >
     <DockPanel>
         <Menu DockPanel.Dock="Top" IsMainMenu="True">
@@ -26,12 +26,16 @@
                 <ColumnDefinition Width="5*"/>
             </Grid.ColumnDefinitions>
             <Grid Grid.Column="0">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="*"/>
-                    <RowDefinition Height="30"/>
-                </Grid.RowDefinitions>
-                <Button Grid.Row="1" Content="Insert new text" Click="InsertNewTextClick"/>
-                <ListView Grid.Row="0" Name="TextsList" BorderBrush="#00000000">
+                <ListView Name="TextsList" BorderBrush="#00000000">
+                    <ListView.ContextMenu>
+                        <ContextMenu>
+                            <MenuItem Header="Insert new text:">
+                                <MenuItem Header="Before" Click="InsertNewTextBeforeClick"/>
+                                <MenuItem Header="After" Click="InsertNewTextAfterClick"/>
+                            </MenuItem>
+                            <MenuItem Header="Delete" Click="DeleteTextClick"/>
+                        </ContextMenu>
+                    </ListView.ContextMenu>
                     <ListView.ItemContainerStyle>
                         <Style TargetType="ListViewItem" BasedOn="{StaticResource {x:Type ListViewItem}}">
                             <EventSetter Event="PreviewMouseLeftButtonUp" Handler="ListBoxItemClick" />

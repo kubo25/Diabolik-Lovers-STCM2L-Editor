@@ -15,6 +15,7 @@ using System.Windows.Navigation;
 
 using Diabolik_Lovers_STCM2L_Editor.classes;
 using MahApps.Metro.Controls;
+using System.IO;
 
 namespace Diabolik_Lovers_STCM2L_Editor {
     public partial class MainWindow : MetroWindow {
@@ -30,11 +31,16 @@ namespace Diabolik_Lovers_STCM2L_Editor {
             if (openFileDialog.ShowDialog() == true) {
                 stcm2l = new STCM2L(openFileDialog.FileName);
 
+                Title = Path.GetFileName(openFileDialog.FileName);
+
                 if (stcm2l.Load()) {
                     TextsList.DataContext = stcm2l.Texts;
                     TextsList.ItemsSource = stcm2l.Texts;
+
                     LinesList.DataContext = null;
                     LinesList.ItemsSource = null;
+
+                    NameBox.DataContext = null;
                 }
                 else {
                    Console.WriteLine("Invalid File");
@@ -93,12 +99,21 @@ namespace Diabolik_Lovers_STCM2L_Editor {
 
         private void DeleteLineClick(object sender, RoutedEventArgs e) {
             ((sender as MenuItem).DataContext as TextEntity).DeleteLine(LinesList.SelectedIndex);
+            stcm2l.DeleteLine(LinesList.SelectedIndex, 1);
         }
 
-        private void InsertNewTextClick(object sender, RoutedEventArgs e) {
+        private void InsertNewTextAfterClick(object sender, RoutedEventArgs e) {
+            InsertNewText(false);
+        }
+
+        private void InsertNewTextBeforeClick(object sender, RoutedEventArgs e) {
+            InsertNewText(true);
+        }
+
+        private void InsertNewText(bool before) {
             if (TextsList.SelectedIndex != -1) {
                 bool newPage = false;
-                if(stcm2l.Texts[TextsList.SelectedIndex].Name == null) {
+                if (stcm2l.Texts[TextsList.SelectedIndex].Name == null) {
                     string messageBoxCaption = "New page";
                     string messageBoxText = "Do you want to create a new page?";
                     MessageBoxButton button = MessageBoxButton.YesNo;
@@ -108,8 +123,17 @@ namespace Diabolik_Lovers_STCM2L_Editor {
 
                     newPage = result == MessageBoxResult.Yes;
                 }
-                stcm2l.InsertText(TextsList.SelectedIndex, newPage);
+                stcm2l.InsertText(TextsList.SelectedIndex, before, newPage);
             }
+        }
+
+        private void DeleteTextClick(object sender, RoutedEventArgs e) {
+            stcm2l.DeleteText(TextsList.SelectedIndex);
+
+            LinesList.DataContext = null;
+            LinesList.ItemsSource = null;
+
+            NameBox.DataContext = null;
         }
     }
 }

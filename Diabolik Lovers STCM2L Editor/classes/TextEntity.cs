@@ -30,7 +30,7 @@ namespace Diabolik_Lovers_STCM2L_Editor.classes {
             AmountInserted = 0;
         }
 
-        public TextEntity(List<Action> actions, int actionsEnd, string name, bool newPage) {
+        public TextEntity(List<Action> actions, int actionsEnd, string name, bool newPage, bool before) {
             Actions = actions;
             ActionsEnd = actionsEnd;
             AmountInserted = 0;
@@ -46,17 +46,22 @@ namespace Diabolik_Lovers_STCM2L_Editor.classes {
             }
             else {
                 if (newPage) {
-                    Actions.Insert(ActionsEnd, new Action(0, Action.ACTION_NEW_PAGE, 0));
+                    Actions.Insert(ActionsEnd + AmountInserted, new Action(0, Action.ACTION_NEW_PAGE, 0));
                     AmountInserted++;
                 }
 
-                Actions.Insert(ActionsEnd, new Action(0, Action.ACTION_DIVIDER, 0));
+                Actions.Insert(ActionsEnd + AmountInserted, new Action(0, Action.ACTION_DIVIDER, 0));
                 AmountInserted++;
             }
 
             Lines = new ObservableCollection<Line>();
             LineActions = new List<Action>();
-            AddLine();
+            AddLine(true);
+
+            if (before) {
+                Actions.Insert(ActionsEnd + AmountInserted, new Action(0, Action.ACTION_DIVIDER, 0));
+                AmountInserted++;
+            }
 
             IsAnswer = false;
             IsHighlighted = false;
@@ -128,14 +133,14 @@ namespace Diabolik_Lovers_STCM2L_Editor.classes {
             }
         }
 
-        public void AddLine() {
+        public void AddLine(bool isNew = false) {
             if (!IsAnswer && Lines.Count <= 3) {
                 Action action = new Action(0, Action.ACTION_TEXT, 1);
                 Line line = new Line("");
 
                 Lines.Add(line);
                 LineActions.Add(action);
-                Actions.Insert(ActionsEnd + AmountInserted, action);
+                Actions.Insert(ActionsEnd + (isNew ? AmountInserted : 0), action);
 
                 AmountInserted++;
             }
@@ -144,8 +149,13 @@ namespace Diabolik_Lovers_STCM2L_Editor.classes {
         public void DeleteLine(int index) {
             Lines.Remove(Lines[index]);
             Actions.Remove(LineActions[index]);
-            ActionsEnd--;
             LineActions.Remove(LineActions[index]);
+        }
+
+        public void DeleteText() {
+            for(int i = 1; i <= AmountInserted; i++) {
+                Actions.Remove(Actions[ActionsEnd - i]);
+            }
         }
     }
 }
