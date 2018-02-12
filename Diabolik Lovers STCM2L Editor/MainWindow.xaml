@@ -21,9 +21,9 @@
         </Menu>
         <Grid>
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="2*" />
-                <ColumnDefinition Width="3" />
-                <ColumnDefinition Width="5*" />
+                <ColumnDefinition Width="2*" MaxWidth="300"/>
+                <ColumnDefinition Width="3"/>
+                <ColumnDefinition Width="5*"/>
             </Grid.ColumnDefinitions>
             <Grid Grid.Column="0">
                 <Grid.RowDefinitions>
@@ -31,23 +31,23 @@
                     <RowDefinition Height="30"/>
                 </Grid.RowDefinitions>
                 <Button Grid.Row="1" Content="Insert new text" Click="InsertNewTextClick"/>
-                <ListBox Grid.Row="0" Name="TextsList">
-                    <ListBox.ItemContainerStyle>
-                        <Style TargetType="ListBoxItem">
+                <ListView Grid.Row="0" Name="TextsList" BorderBrush="#00000000">
+                    <ListView.ItemContainerStyle>
+                        <Style TargetType="ListViewItem" BasedOn="{StaticResource {x:Type ListViewItem}}">
                             <EventSetter Event="PreviewMouseLeftButtonUp" Handler="ListBoxItemClick" />
                         </Style>
-                    </ListBox.ItemContainerStyle>
-                    <ListBox.ItemTemplate>
+                    </ListView.ItemContainerStyle>
+                    <ListView.ItemTemplate>
                         <DataTemplate>
                             <TextBlock DockPanel.Dock="Right" Text="{Binding Lines[0].LineText}"/>
                         </DataTemplate>
-                    </ListBox.ItemTemplate>
-                </ListBox>
+                    </ListView.ItemTemplate>
+                </ListView>
             </Grid>
             <GridSplitter Grid.Column="1" HorizontalAlignment="Stretch" Width="3" />
             <Grid Grid.Column="2">
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="30"/>
+                    <RowDefinition Height="40"/>
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
                 <DockPanel Grid.Row="0">
@@ -56,6 +56,11 @@
                     <Button DockPanel.Dock="Right" HorizontalAlignment="Right" Content="Add new line" VerticalAlignment="Center" Margin="0,0,10,0" Click="AddNewLineClick"/>
                 </DockPanel>
                 <ListView Grid.Row="1" Name="LinesList" HorizontalContentAlignment="Stretch">
+                    <ListView.ContextMenu>
+                        <ContextMenu>
+                            <MenuItem Header="Delete" Click="DeleteLineClick"/>
+                        </ContextMenu>
+                    </ListView.ContextMenu>
                     <ListView.ItemTemplate>
                         <DataTemplate>
                             <DockPanel>

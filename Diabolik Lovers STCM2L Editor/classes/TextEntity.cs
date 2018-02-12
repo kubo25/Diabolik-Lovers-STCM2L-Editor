@@ -12,7 +12,6 @@ namespace Diabolik_Lovers_STCM2L_Editor.classes {
 
         public ObservableCollection<Line> Lines { get; set; }
         public List<Action> LineActions { get; set; }
-        public int LinesCount { get; set; } //TODO: Check if necessary
 
         public UInt32 OldAddress { get; set; }
 
@@ -28,11 +27,10 @@ namespace Diabolik_Lovers_STCM2L_Editor.classes {
             Name = null;
             Lines = new ObservableCollection<Line>();
             LineActions = new List<Action>();
-            LinesCount = 0;
             AmountInserted = 0;
         }
 
-        public TextEntity(List<Action> actions, int actionsEnd, string name) {
+        public TextEntity(List<Action> actions, int actionsEnd, string name, bool newPage) {
             Actions = actions;
             ActionsEnd = actionsEnd;
             AmountInserted = 0;
@@ -47,8 +45,10 @@ namespace Diabolik_Lovers_STCM2L_Editor.classes {
                 AmountInserted++;
             }
             else {
-                Actions.Insert(ActionsEnd, new Action(0, Action.ACTION_NEW_PAGE, 0));
-                AmountInserted++;
+                if (newPage) {
+                    Actions.Insert(ActionsEnd, new Action(0, Action.ACTION_NEW_PAGE, 0));
+                    AmountInserted++;
+                }
 
                 Actions.Insert(ActionsEnd, new Action(0, Action.ACTION_DIVIDER, 0));
                 AmountInserted++;
@@ -56,7 +56,6 @@ namespace Diabolik_Lovers_STCM2L_Editor.classes {
 
             Lines = new ObservableCollection<Line>();
             LineActions = new List<Action>();
-            LinesCount = 0;
             AddLine();
 
             IsAnswer = false;
@@ -83,7 +82,6 @@ namespace Diabolik_Lovers_STCM2L_Editor.classes {
 
                     Lines.Add(line);
                     LineActions.Add(actions[i]);
-                    LinesCount++;
                 }
                 i++;
                 ActionsEnd = i;
@@ -103,7 +101,6 @@ namespace Diabolik_Lovers_STCM2L_Editor.classes {
 
             Lines.Add(line);
             LineActions.Add(actions[i]);
-            LinesCount = 1;
             IsAnswer = true;
         }
 
@@ -126,13 +123,13 @@ namespace Diabolik_Lovers_STCM2L_Editor.classes {
                 NameAction.SetString(Name.LineText, 0);
             }
 
-            for(int i = 0; i < LinesCount; i++) {
+            for(int i = 0; i < Lines.Count; i++) {
                 LineActions[i].SetString(Lines[i].LineText, 0);
             }
         }
 
         public void AddLine() {
-            if (!IsAnswer && LinesCount <= 3) {
+            if (!IsAnswer && Lines.Count <= 3) {
                 Action action = new Action(0, Action.ACTION_TEXT, 1);
                 Line line = new Line("");
 
@@ -141,8 +138,14 @@ namespace Diabolik_Lovers_STCM2L_Editor.classes {
                 Actions.Insert(ActionsEnd + AmountInserted, action);
 
                 AmountInserted++;
-                LinesCount++;
             }
+        }
+
+        public void DeleteLine(int index) {
+            Lines.Remove(Lines[index]);
+            Actions.Remove(LineActions[index]);
+            ActionsEnd--;
+            LineActions.Remove(LineActions[index]);
         }
     }
 }

@@ -257,14 +257,14 @@ namespace Diabolik_Lovers_STCM2L_Editor.classes {
             Console.WriteLine("Read {0} texts.", Texts.Count);
         }
 
-        public void InsertText (int index) {
+        public void InsertText (int index, bool newPage) {
             string name = null;
 
             if (Texts[index].Name != null) {
                 name = Texts[index].Name.LineText;
             }
 
-            TextEntity text = new TextEntity(Actions, Texts[index].ActionsEnd, name);
+            TextEntity text = new TextEntity(Actions, Texts[index].ActionsEnd, name, newPage);
 
             Texts.Insert(index + 1, text);
             AddLine(index + 1, text.AmountInserted);

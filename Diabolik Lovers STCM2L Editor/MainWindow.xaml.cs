@@ -33,6 +33,8 @@ namespace Diabolik_Lovers_STCM2L_Editor {
                 if (stcm2l.Load()) {
                     TextsList.DataContext = stcm2l.Texts;
                     TextsList.ItemsSource = stcm2l.Texts;
+                    LinesList.DataContext = null;
+                    LinesList.ItemsSource = null;
                 }
                 else {
                    Console.WriteLine("Invalid File");
@@ -89,9 +91,24 @@ namespace Diabolik_Lovers_STCM2L_Editor {
             }
         }
 
+        private void DeleteLineClick(object sender, RoutedEventArgs e) {
+            ((sender as MenuItem).DataContext as TextEntity).DeleteLine(LinesList.SelectedIndex);
+        }
+
         private void InsertNewTextClick(object sender, RoutedEventArgs e) {
             if (TextsList.SelectedIndex != -1) {
-                stcm2l.InsertText(TextsList.SelectedIndex);
+                bool newPage = false;
+                if(stcm2l.Texts[TextsList.SelectedIndex].Name == null) {
+                    string messageBoxCaption = "New page";
+                    string messageBoxText = "Do you want to create a new page?";
+                    MessageBoxButton button = MessageBoxButton.YesNo;
+                    MessageBoxImage image = MessageBoxImage.Question;
+
+                    MessageBoxResult result = MessageBox.Show(messageBoxText, messageBoxCaption, button, image);
+
+                    newPage = result == MessageBoxResult.Yes;
+                }
+                stcm2l.InsertText(TextsList.SelectedIndex, newPage);
             }
         }
     }
