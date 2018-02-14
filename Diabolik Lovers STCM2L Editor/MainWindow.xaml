@@ -63,7 +63,7 @@
                     </ListView.ContextMenu>
                     <ListView.ItemContainerStyle>
                         <Style TargetType="ListViewItem" BasedOn="{StaticResource {x:Type ListViewItem}}">
-                            <EventSetter Event="PreviewMouseLeftButtonUp" Handler="ListBoxItemClick" />
+                            <EventSetter Event="PreviewMouseLeftButtonUp" Handler="TextsListItemClick" />
                         </Style>
                     </ListView.ItemContainerStyle>
                     <ListView.ItemTemplate>

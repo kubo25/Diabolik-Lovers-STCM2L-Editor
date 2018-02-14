@@ -120,7 +120,9 @@ namespace Diabolik_Lovers_STCM2L_Editor {
             }
         }
 
-        private void ListBoxItemClick(object sender, MouseButtonEventArgs e) {
+        private void TextsListItemClick(object sender, MouseButtonEventArgs e) {
+            bool temp = ShouldSave;
+
             LinesList.DataContext = (sender as ListBoxItem).DataContext;
             NameBox.DataContext = (sender as ListBoxItem).DataContext;
 
@@ -131,6 +133,10 @@ namespace Diabolik_Lovers_STCM2L_Editor {
             binding.UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged;
 
             LinesList.SetBinding(ItemsControl.ItemsSourceProperty, binding);
+
+            if (!temp) {
+                ShouldSave = false;
+            }
         }
 
         private void ResetAllTextClick(object sender, RoutedEventArgs e) {
