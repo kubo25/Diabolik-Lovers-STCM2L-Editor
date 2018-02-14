@@ -134,7 +134,7 @@ namespace Diabolik_Lovers_STCM2L_Editor.classes {
         }
 
         public void AddLine(bool isNew = false, int index = -1) {
-            if (!IsAnswer && Lines.Count < 3) {
+            if (!IsAnswer && ((NameAction == null && Lines.Count < 10 )|| Lines.Count < 3)) {
                 Action action = new Action(0, Action.ACTION_TEXT, 1);
                 Line line = new Line("");
 
