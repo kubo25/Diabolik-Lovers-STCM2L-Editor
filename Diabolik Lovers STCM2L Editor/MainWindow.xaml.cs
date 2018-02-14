@@ -139,12 +139,6 @@ namespace Diabolik_Lovers_STCM2L_Editor {
             }
         }
 
-        private void ResetAllTextClick(object sender, RoutedEventArgs e) {
-            if (LinesList.DataContext != null) {
-                (LinesList.DataContext as TextEntity).ResetText();
-            }
-        }
-
         private void ResetLineClick(object sender, RoutedEventArgs e) {
             ((sender as MenuItem).DataContext as TextEntity).Lines[LinesList.SelectedIndex].Reset();
         }

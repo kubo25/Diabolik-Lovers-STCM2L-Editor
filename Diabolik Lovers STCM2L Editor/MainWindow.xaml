@@ -39,10 +39,6 @@
                     InputGestureText="Ctrl+Shift+S"
                 />
             </MenuItem>
-            <MenuItem Header="_Text">
-                <MenuItem Header="_Reset Name" Click="ResetNameClick"/>
-                <MenuItem Header="_Reset to Default" Click="ResetAllTextClick"/>
-            </MenuItem>
         </Menu>
         <Grid>
             <Grid.ColumnDefinitions>
@@ -83,6 +79,7 @@
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="50"/>
                         <ColumnDefinition Width="200"/>
+                        <ColumnDefinition Width="100"/>
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
                     <Label 
@@ -100,8 +97,15 @@
                         VerticalAlignment="Center"
                         HorizontalAlignment="Stretch"
                     />
-                    <Button 
+                    <Button
                         Grid.Column="2"
+                        Content="Reset Name"
+                        VerticalAlignment="Center"
+                        Margin="10, 0, 0, 0"
+                        Click="ResetNameClick"
+                    />
+                    <Button 
+                        Grid.Column="3"
                         HorizontalAlignment="Right" 
                         Content="Add new line" 
                         VerticalAlignment="Center" 
