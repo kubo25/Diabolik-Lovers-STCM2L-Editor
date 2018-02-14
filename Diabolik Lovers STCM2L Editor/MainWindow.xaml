@@ -95,6 +95,7 @@
                         Grid.Column="1"
                         Name="NameBox" 
                         Text="{Binding Path=Name.LineText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+                        TextChanged="TextChanged"
                         MaxLength="20"
                         VerticalAlignment="Center"
                         HorizontalAlignment="Stretch"
@@ -123,7 +124,8 @@
                         <DataTemplate>
                             <TextBox 
                                 DockPanel.Dock="Left" 
-                                Text="{Binding Path=LineText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+                                Text="{Binding Path=LineText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                TextChanged="TextChanged"
                                 MaxLength="40"
                                 MinWidth="100px" 
                                 HorizontalAlignment="Left"

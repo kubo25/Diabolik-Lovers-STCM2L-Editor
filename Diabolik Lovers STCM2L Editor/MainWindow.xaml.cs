@@ -12,20 +12,63 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
+using System.IO;
+using System.ComponentModel;
 
 using Diabolik_Lovers_STCM2L_Editor.classes;
 using MahApps.Metro.Controls;
-using System.IO;
 
 namespace Diabolik_Lovers_STCM2L_Editor {
     public partial class MainWindow : MetroWindow {
-        private STCM2L stcm2l;
+        private STCM2L Stcm2l;
+        private bool ShouldSave = false;
 
         public MainWindow() {
             InitializeComponent();
+            Closing += OnClose;
+        }
+
+        private void OnClose (object sender, CancelEventArgs e) {
+            if (Stcm2l != null && ShouldSave) {
+                MessageBoxResult saveWarning = ShowSaveWarning();
+
+                switch (saveWarning) {
+                    case MessageBoxResult.Yes:
+                        SaveAsCommand(null, null);
+                        break;
+                    case MessageBoxResult.No:
+                        break;
+                    case MessageBoxResult.Cancel:
+                        e.Cancel = true;
+                        break;
+                }
+            }
+        }
+
+        private MessageBoxResult ShowSaveWarning() {
+            string messageBoxCaption = "Save";
+            string messageBoxText = "Do you want to save your changes?";
+            MessageBoxButton button = MessageBoxButton.YesNoCancel;
+            MessageBoxImage image = MessageBoxImage.Warning;
+
+            return MessageBox.Show(messageBoxText, messageBoxCaption, button, image);
         }
 
         private void OpenFileCommad(object sender, ExecutedRoutedEventArgs e) {
+            if (Stcm2l != null && ShouldSave) {
+                MessageBoxResult saveWarning = ShowSaveWarning();
+
+                switch (saveWarning) {
+                    case MessageBoxResult.Yes:
+                        SaveAsCommand(null, null);
+                        break;
+                    case MessageBoxResult.No:
+                        break;
+                    case MessageBoxResult.Cancel:
+                       return;
+                }
+            }
+
             OpenFileDialog openFileDialog = new OpenFileDialog();
 
             if (openFileDialog.ShowDialog() == true) {
@@ -34,18 +77,20 @@ namespace Diabolik_Lovers_STCM2L_Editor {
         }
 
         private void OpenFile(string path) {
-            stcm2l = new STCM2L(path);
+            Stcm2l = new STCM2L(path);
 
             Title = Path.GetFileName(path);
 
-            if (stcm2l.Load()) {
-                TextsList.DataContext = stcm2l.Texts;
-                TextsList.ItemsSource = stcm2l.Texts;
+            if (Stcm2l.Load()) {
+                TextsList.DataContext = Stcm2l.Texts;
+                TextsList.ItemsSource = Stcm2l.Texts;
 
                 LinesList.DataContext = null;
                 LinesList.ItemsSource = null;
 
                 NameBox.DataContext = null;
+
+                ShouldSave = false;
             }
             else {
                 Console.WriteLine("Invalid File");
@@ -56,18 +101,22 @@ namespace Diabolik_Lovers_STCM2L_Editor {
             SaveFileDialog saveFileDialog = new SaveFileDialog();
 
             if (saveFileDialog.ShowDialog() == true) {
-                if (stcm2l == null || !stcm2l.Save(saveFileDialog.FileName)) {
+                if (Stcm2l == null || !Stcm2l.Save(saveFileDialog.FileName)) {
                     Console.WriteLine("Failed to save.");
                 }
                 else {
                     OpenFile(saveFileDialog.FileName);
+                    ShouldSave = false;
                 }
             }
         }
 
         private void SaveCommand(object sender, ExecutedRoutedEventArgs e) {
-            if (stcm2l == null || !stcm2l.Save(stcm2l.FilePath)) {
+            if (Stcm2l == null || !Stcm2l.Save(Stcm2l.FilePath)) {
                 Console.WriteLine("Failed to save.");
+            }
+            else {
+                ShouldSave = false;
             }
         }
 
@@ -103,32 +152,34 @@ namespace Diabolik_Lovers_STCM2L_Editor {
         private void AddNewLineClick(object sender, RoutedEventArgs e) {
             if (LinesList.DataContext as TextEntity != null) {
                 InsertLine();
-                stcm2l.AddLine(TextsList.SelectedIndex, 1);
+                Stcm2l.AddLine(TextsList.SelectedIndex, 1);
             }
         }
 
         private void InsertNewLineBeforeClick(object sender, RoutedEventArgs e) {
             if (LinesList.DataContext as TextEntity != null) {
                 InsertLine(LinesList.SelectedIndex);
-                stcm2l.AddLine(TextsList.SelectedIndex, 1);
+                Stcm2l.AddLine(TextsList.SelectedIndex, 1);
             }
         }
 
         private void InsertNewLineAfterClick(object sender, RoutedEventArgs e) {
             if (LinesList.DataContext as TextEntity != null) {
                 InsertLine(LinesList.SelectedIndex + 1);
-                stcm2l.AddLine(TextsList.SelectedIndex, 1);
+                Stcm2l.AddLine(TextsList.SelectedIndex, 1);
             }
         }
 
         private void InsertLine(int index = -1) {
             (LinesList.DataContext as TextEntity).AddLine(false, index);
+            ShouldSave = true;
         }
 
         private void DeleteLineClick(object sender, RoutedEventArgs e) {
             int index = LinesList.SelectedIndex;
             ((sender as MenuItem).DataContext as TextEntity).DeleteLine(index);
-            stcm2l.DeleteLine(index, 1);
+            Stcm2l.DeleteLine(index, 1);
+            ShouldSave = true;
         }
 
         private void InsertNewTextAfterClick(object sender, RoutedEventArgs e) {
@@ -142,7 +193,7 @@ namespace Diabolik_Lovers_STCM2L_Editor {
         private void InsertNewText(bool before) {
             if (TextsList.SelectedIndex != -1) {
                 bool newPage = false;
-                if (stcm2l.Texts[TextsList.SelectedIndex].Name == null) {
+                if (Stcm2l.Texts[TextsList.SelectedIndex].Name == null) {
                     string messageBoxCaption = "New page";
                     string messageBoxText = "Do you want to create a new page?";
                     MessageBoxButton button = MessageBoxButton.YesNo;
@@ -152,17 +203,24 @@ namespace Diabolik_Lovers_STCM2L_Editor {
 
                     newPage = result == MessageBoxResult.Yes;
                 }
-                stcm2l.InsertText(TextsList.SelectedIndex, before, newPage);
+                Stcm2l.InsertText(TextsList.SelectedIndex, before, newPage);
+                ShouldSave = true;
             }
         }
 
         private void DeleteTextClick(object sender, RoutedEventArgs e) {
-            stcm2l.DeleteText(TextsList.SelectedIndex);
+            Stcm2l.DeleteText(TextsList.SelectedIndex);
 
             LinesList.DataContext = null;
             LinesList.ItemsSource = null;
 
             NameBox.DataContext = null;
+
+            ShouldSave = true;
+        }
+
+        private void TextChanged(object sender, TextChangedEventArgs e) {
+            ShouldSave = true;
         }
     }
 }
