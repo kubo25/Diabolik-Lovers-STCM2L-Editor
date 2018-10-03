@@ -12,6 +12,7 @@ namespace Diabolik_Lovers_STCM2L_Editor.classes {
 
         public ObservableCollection<Line> Lines { get; set; }
         public List<Action> LineActions { get; set; }
+        public List<Action> PlaceActions { get; set; }
 
         public UInt32 OldAddress { get; set; }
 
@@ -27,6 +28,7 @@ namespace Diabolik_Lovers_STCM2L_Editor.classes {
             Name = null;
             Lines = new ObservableCollection<Line>();
             LineActions = new List<Action>();
+            PlaceActions = new List<Action>();
             AmountInserted = 0;
         }
 
@@ -56,6 +58,7 @@ namespace Diabolik_Lovers_STCM2L_Editor.classes {
 
             Lines = new ObservableCollection<Line>();
             LineActions = new List<Action>();
+            PlaceActions = new List<Action>();
             AddLine(true);
 
             if (before) {
@@ -73,12 +76,20 @@ namespace Diabolik_Lovers_STCM2L_Editor.classes {
             UInt32 opCode = actions[i].OpCode;
             OldAddress = actions[i].OldAddress;
 
-            while (opCode == Action.ACTION_NAME || opCode == Action.ACTION_TEXT) {
+            while (opCode == Action.ACTION_NAME || opCode == Action.ACTION_TEXT || opCode == Action.ACTION_PLACE) {
                 if (opCode == Action.ACTION_NAME) {
                     if (Name == null) {
                         Name = new Line(actions[i].GetStringFromParameter(0));
                         NameAction = actions[i];
                     }
+                }
+                else if (opCode == Action.ACTION_PLACE) {
+                    string temp = actions[i].GetStringFromParameter(3);
+
+                    Line line = new Line(temp);
+
+                    Lines.Add(line);
+                    PlaceActions.Add(actions[i]);
                 }
                 else {
                     string temp = actions[i].GetStringFromParameter(0);
@@ -128,8 +139,15 @@ namespace Diabolik_Lovers_STCM2L_Editor.classes {
                 NameAction.SetString(Name.LineText, 0);
             }
 
-            for(int i = 0; i < Lines.Count; i++) {
-                LineActions[i].SetString(Lines[i].LineText, 0);
+            if (PlaceActions.Count > 0) {
+                for (int i = 0; i < Lines.Count; i++) {
+                    PlaceActions[i].SetString(Lines[i].LineText, 3);
+                }
+            }
+            else {
+                for (int i = 0; i < Lines.Count; i++) {
+                    LineActions[i].SetString(Lines[i].LineText, 0);
+                }
             }
         }
 

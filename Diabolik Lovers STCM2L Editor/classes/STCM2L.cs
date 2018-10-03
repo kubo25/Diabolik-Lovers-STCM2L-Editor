@@ -239,7 +239,7 @@ namespace Diabolik_Lovers_STCM2L_Editor.classes {
         private void MakeEntities() {
             for (int i = 0; i < Actions.Count; i++) { 
                 if (
-                    (Actions[i].OpCode == Action.ACTION_NAME || Actions[i].OpCode == Action.ACTION_TEXT) &&
+                    (Actions[i].OpCode == Action.ACTION_NAME || Actions[i].OpCode == Action.ACTION_TEXT || Actions[i].OpCode == Action.ACTION_PLACE) &&
                     Actions[i].ExtraDataLength > 0
                 ) {
                     TextEntity textEntity = new TextEntity();

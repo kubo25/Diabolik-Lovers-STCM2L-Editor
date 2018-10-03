@@ -13,6 +13,7 @@ namespace Diabolik_Lovers_STCM2L_Editor.classes {
         public const UInt32 ACTION_CHOICE = 0xe7;
         public const UInt32 ACTION_DIVIDER = 0xd3;
         public const UInt32 ACTION_NEW_PAGE = 0x1c1;
+        public const UInt32 ACTION_PLACE = 0x79d0;
 
         public UInt32 Length { get; set; }
         public UInt32 ParameterCount { get; set; }
@@ -143,37 +144,56 @@ namespace Diabolik_Lovers_STCM2L_Editor.classes {
                 Console.WriteLine(OldAddress);
             }
 
-            if (Parameters[parameter].Type == ParameterType.LOCAL_PARAMETER) {
-                ExtraData = null;
-                Length -= ExtraDataLength;
-                ExtraDataLength = alignedLength + 16;
-                newExtraStart = 0;
+            if (LocalParameterCount <= 0) {
+                if (Parameters[parameter].Type == ParameterType.LOCAL_PARAMETER) {
+                    ExtraData = null;
+                    Length -= ExtraDataLength;
+                    ExtraDataLength = alignedLength + 16;
+                    newExtraStart = 0;
+                }
+                else {
+                    Parameters[parameter].Type = ParameterType.LOCAL_PARAMETER;
+                    LocalParameterCount++;
+                    newExtraStart = ExtraDataLength;
+                    ExtraDataLength += alignedLength + 16;
+
+                }
+
+                Length += alignedLength + 16;
+
+                if (newExtraStart == 0) {
+                    ExtraData = new byte[ExtraDataLength];
+                }
+                else {
+                    byte[] newExtraData = new byte[ExtraDataLength];
+
+                    Array.Copy(ExtraData, newExtraData, ExtraData.Length);
+                    ExtraData = newExtraData;
+                }
+
+                ExtraData = ByteUtil.InsertBytes(ExtraData, encodedStr, newExtraStart + 16);
+                ExtraData = ByteUtil.InsertUint32(ExtraData, 0, newExtraStart);
+                ExtraData = ByteUtil.InsertUint32(ExtraData, alignedLength / 4, newExtraStart + 4);
+                ExtraData = ByteUtil.InsertUint32(ExtraData, 1, newExtraStart + 2 * 4);
+                ExtraData = ByteUtil.InsertUint32(ExtraData, alignedLength, newExtraStart + 3 * 4);
             }
             else {
-                Parameters[parameter].Type = ParameterType.LOCAL_PARAMETER;
-                LocalParameterCount++;
-                newExtraStart = ExtraDataLength;
-                ExtraDataLength += alignedLength + 16;
-                
-            }
+                newExtraStart = Parameters[parameter].RelativeAddress - 16 - ParameterCount * 12;
+                UInt32 newExtraDataLength = newExtraStart + alignedLength + 16;
+                byte[] newExtraData = new byte[newExtraDataLength];
 
-            Length += alignedLength + 16;
+                Array.Copy(ExtraData, newExtraData, newExtraStart);
 
-            if (newExtraStart == 0) {
-                ExtraData = new byte[ExtraDataLength];
-            }
-            else {
-                byte[] newExtraData = new byte[ExtraDataLength];
+                newExtraData = ByteUtil.InsertBytes(newExtraData, encodedStr, newExtraStart + 16);
+                newExtraData = ByteUtil.InsertUint32(newExtraData, 0, newExtraStart);
+                newExtraData = ByteUtil.InsertUint32(newExtraData, alignedLength / 4, newExtraStart + 4);
+                newExtraData = ByteUtil.InsertUint32(newExtraData, 1, newExtraStart + 2 * 4);
+                newExtraData = ByteUtil.InsertUint32(newExtraData, alignedLength, newExtraStart + 3 * 4);
 
-                Array.Copy(ExtraData, newExtraData, ExtraData.Length);
                 ExtraData = newExtraData;
+                Length -= ExtraDataLength;
+                Length += newExtraDataLength;
             }
-
-            ExtraData = ByteUtil.InsertBytes(ExtraData, encodedStr, newExtraStart + 16);
-            ExtraData = ByteUtil.InsertUint32(ExtraData, 0, newExtraStart);
-            ExtraData = ByteUtil.InsertUint32(ExtraData, alignedLength / 4, newExtraStart + 4);
-            ExtraData = ByteUtil.InsertUint32(ExtraData, 1, newExtraStart + 2 * 4);
-            ExtraData = ByteUtil.InsertUint32(ExtraData, alignedLength, newExtraStart + 3 * 4);
         }
 
         public byte[] Write() {
